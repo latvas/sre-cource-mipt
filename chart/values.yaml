@@ -1,0 +1,16 @@
+resources: 
+   limits:
+     cpu: 100m
+     memory: 256Mi
+   requests:
+     cpu: 100m
+     memory: 256Mi
+
+livenessProbe:
+  httpGet:
+    path: /healthz/live
+    port: 80
+readinessProbe:
+  httpGet:
+    path: /healthz/ready
+    port: 80
