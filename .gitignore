@@ -1,3 +1,5 @@
+.venv
 MftiCourseApi
 hosts.ini
 chart/deploy_chart.sh
+postgresql_cluster/
