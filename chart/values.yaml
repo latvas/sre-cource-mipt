@@ -9,13 +9,13 @@ resources:
 livenessProbe:
   httpGet:
     path: /healthz/live
-    port: 80
+    port: 18123
 readinessProbe:
   httpGet:
     path: /healthz/ready
-    port: 80
+    port: 18123
 
 env:
-  CONNECTIONSTRINGS__PGCONNECTION: Server=192.168.1.11;Port=5432;User id=postgres;Database=postgres;password=secretpassword;
+  CONNECTIONSTRINGS__PGCONNECTION: Server=192.168.1.18;Port=5432;User id=postgres;Database=postgres;password=secretpassword;
   ASPNETCORE_ENVIRONMENT: "1"
-  ASPNETCORE_URLS: http://*:80
+  ASPNETCORE_URLS: http://*:18123
