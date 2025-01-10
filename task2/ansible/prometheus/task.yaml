@@ -1,0 +1,31 @@
+---
+- name: Deploy Prometheus configuration file and restart service
+  hosts: master
+  become: true
+
+  tasks:
+    - name: Copy prometheus.yml to the target machine
+      copy:
+        src: ./prometheus.yml
+        dest: /etc/prometheus/prometheus.yml
+        owner: prometheus
+        group: prometheus
+        mode: '0644'
+      register: copy_result
+
+    - name: Restart Prometheus service if the configuration file changed
+      systemd:
+        name: prometheus
+        state: restarted
+      when: copy_result is changed
+
+    - name: Verify the Prometheus service status
+      systemd:
+        name: prometheus
+        state: started
+      register: service_status
+
+    - name: Confirm Prometheus service is active
+      debug:
+        msg: "Prometheus service is running and the configuration has been applied."
+      when: service_status is succeeded

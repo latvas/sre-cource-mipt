@@ -1,0 +1,32 @@
+- hosts: all
+  become: yes
+  tasks:
+
+    - name: Install node_exporter for OS metrics
+      ansible.builtin.shell: |
+        wget https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz
+        tar -xvf node_exporter-1.8.2.linux-amd64.tar.gz
+        mv node_exporter-1.8.2.linux-amd64/node_exporter /usr/local/bin/
+      args:
+        chdir: /tmp
+
+    - name: Set up node_exporter as a service
+      copy:
+        dest: /etc/systemd/system/node_exporter.service
+        content: |
+          [Unit]
+          Description=Node Exporter
+          After=network.target
+
+          [Service]
+          User=root
+          ExecStart=/usr/local/bin/node_exporter
+
+          [Install]
+          WantedBy=default.target
+
+    - name: Enable and start node_exporter service
+      systemd:
+        name: node_exporter
+        state: started
+        enabled: yes
