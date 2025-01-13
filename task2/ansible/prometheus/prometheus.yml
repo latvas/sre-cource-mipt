@@ -39,3 +39,6 @@ scrape_configs:
     static_configs:
       - targets: ['192.168.1.19:2379', '192.168.1.20:2379', '192.168.1.21:2379']
 
+  - job_name: 'postgress-exporter'
+    static_configs:
+      - targets: ['192.168.1.18:9187', '192.168.1.22:9187']

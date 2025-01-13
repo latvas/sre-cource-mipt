@@ -1,0 +1,37 @@
+- hosts: postgres_cluster
+  become: yes
+  tasks:
+
+    - name: Install postgres_exporter
+      ansible.builtin.shell: |
+        wget https://github.com/prometheus-community/postgres_exporter/releases/download/v0.16.0/postgres_exporter-0.16.0.linux-amd64.tar.gz
+        tar -xvf postgres_exporter-0.16.0.linux-amd64.tar.gz
+        mv postgres_exporter-0.16.0.linux-amd64/postgres_exporter /usr/local/bin/
+      args:
+        chdir: /tmp
+
+    - name: Create postgres_exporter service
+      copy:
+        dest: /etc/systemd/system/postgres_exporter.service
+        content: |
+          [Unit]
+          Description=Prometheus Postgres Exporter
+          After=network.target
+
+          [Service]
+          User=root
+          Group=root
+          Environment=DATA_SOURCE_URI=localhost:5432/postgres?sslmode=disable
+          Environment=DATA_SOURCE_USER=postgres
+          Environment=DATA_SOURCE_PASS=secretpassword
+          ExecStart=/usr/local/bin/postgres_exporter --web.listen-address=:9187 --web.telemetry-path=/metrics
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Enable and start postgres_exporter service
+      systemd:
+        name: postgres_exporter
+        state: started
+        enabled: yes
