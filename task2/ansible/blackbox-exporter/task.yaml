@@ -1,0 +1,80 @@
+---
+- name: Setup Prometheus Blackbox Exporter
+  hosts: balancers
+  become: yes
+  tasks:
+    - name: Install required dependencies
+      apt:
+        name: curl
+        state: present
+        update_cache: yes
+
+    - name: Create blackbox_exporter user
+      user:
+        name: blackbox
+        shell: /bin/false
+        system: yes
+
+    - name: Download Blackbox Exporter binary
+      get_url:
+        url: https://github.com/prometheus/blackbox_exporter/releases/download/v0.24.0/blackbox_exporter-0.24.0.linux-amd64.tar.gz
+        dest: /tmp/blackbox_exporter.tar.gz
+
+    - name: Extract Blackbox Exporter binary
+      unarchive:
+        src: /tmp/blackbox_exporter.tar.gz
+        dest: /opt/
+        remote_src: yes
+
+    - name: Move Blackbox Exporter binary
+      command: mv /opt/blackbox_exporter-0.24.0.linux-amd64 /opt/blackbox_exporter
+
+    - name: Set ownership for Blackbox Exporter
+      file:
+        path: /opt/blackbox_exporter
+        owner: blackbox
+        group: blackbox
+        state: directory
+        recurse: yes
+
+    - name: Create Blackbox Exporter configuration
+      copy:
+        dest: /opt/blackbox_exporter/blackbox.yml
+        content: |
+          modules:
+            http_2xx:
+              prober: http
+              timeout: 5s
+              http:
+                valid_status_codes: [200, 301, 302]
+                headers:
+                  Host: latartsevp
+                tls_config:
+                  insecure_skip_verify: true
+
+    - name: Create Blackbox Exporter systemd service
+      copy:
+        dest: /etc/systemd/system/blackbox_exporter.service
+        content: |
+          [Unit]
+          Description=Prometheus Blackbox Exporter
+          After=network.target
+
+          [Service]
+          User=blackbox
+          Group=blackbox
+          ExecStart=/opt/blackbox_exporter/blackbox_exporter \
+            --config.file=/opt/blackbox_exporter/blackbox.yml
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd
+      command: systemctl daemon-reload
+
+    - name: Enable and start Blackbox Exporter
+      systemd:
+        name: blackbox_exporter
+        enabled: yes
+        state: started

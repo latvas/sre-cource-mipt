@@ -1,0 +1,35 @@
+- hosts: postgres_cluster
+  become: yes
+  tasks:
+
+    - name: Install patroni_exporter
+      ansible.builtin.shell: |
+        wget https://github.com/gopaytech/patroni_exporter/releases/download/v0.2.1/patroni_exporter_linux_x86_64.tar.gz
+        tar -xvf patroni_exporter_linux_x86_64.tar.gz
+        mv patroni_exporter/patroni_exporter /usr/local/bin/
+      args:
+        chdir: /tmp
+
+    - name: Create patroni_exporter service
+      copy:
+        dest: /etc/systemd/system/patroni_exporter.service
+        content: |
+          [Unit]
+          Description=Prometheus Patroni Exporter
+          After=network.target
+
+          [Service]
+          User=root
+          Group=root
+          ExecStart=/usr/local/bin/patroni_exporter --patroni.host="http://localhost" --patroni.port=8008
+
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Enable and start patroni_exporter service
+      systemd:
+        name: patroni_exporter
+        state: started
+        enabled: yes
