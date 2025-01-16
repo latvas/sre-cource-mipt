@@ -12,6 +12,14 @@
         group: prometheus
         mode: '0644'
       register: copy_result
+    
+    - name: Copy ./first_rules.yml to the target machine
+      copy:
+        src: ./first_rules.yml
+        dest: /etc/prometheus/first_rules.yml
+        owner: prometheus
+        group: prometheus
+        mode: '0644'
 
     - name: Restart Prometheus service if the configuration file changed
       systemd:
@@ -29,3 +37,7 @@
       debug:
         msg: "Prometheus service is running and the configuration has been applied."
       when: service_status is succeeded
+    
+    # Step 2: Deploy Alertmanager configuration
+
+

@@ -1,0 +1,42 @@
+groups:
+  - name: Blackbox Exporter Alerts
+    rules:
+      # Latency Alert
+      - alert: BlackboxLatencyHigh
+        expr: probe_duration_seconds{job="blackbox"} > 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency for {{ $labels.target }}"
+          description: "Response time is higher than 1 second for {{ $labels.target }}."
+
+      # Traffic Alert
+      - alert: BlackboxTraffic Spike
+        expr: increase(probe_success{job="blackbox"}[5m]) > 100
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Traffic spike detected for {{ $labels.target }}"
+          description: "There has been a significant increase in traffic for {{ $labels.target }}."
+
+      # Errors Alert
+      - alert: BlackboxErrorRateHigh
+        expr: (1 - sum(probe_success{job="blackbox"}) / sum(probe_http_duration_seconds_count{job="blackbox"})) * 100 > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate for {{ $labels.target }}"
+          description: "Error rate is above 5% for {{ $labels.target }}."
+
+      # Saturation Alert
+      - alert: BlackboxScrapeSaturation
+        expr: probe_scrape_duration_seconds{job="blackbox"} > 30
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Scrape duration is high for {{ $labels.target }}"
+          description: "The scrape duration for {{ $labels.target }} is above 30 seconds."
