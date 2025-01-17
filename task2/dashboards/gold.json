@@ -111,13 +111,15 @@
               "uid": "aea5raptwgu0wc"
             },
             "editorMode": "code",
-            "expr": "histogram_quantile(0.99, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"my-release-ingress\"}[2m])) by (le, ingress))",
+            "exemplar": true,
+            "expr": "histogram_quantile(0.99, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"sre-cource-api\"}[15s])) by (le, ingress))",
             "format": "time_series",
             "hide": false,
             "instant": false,
             "interval": "",
             "intervalFactor": 1,
             "legendFormat": "P99 Latency",
+            "range": true,
             "refId": "A"
           },
           {
@@ -126,9 +128,10 @@
               "uid": "aea5raptwgu0wc"
             },
             "editorMode": "code",
-            "expr": "histogram_quantile(0.90, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"my-release-ingress\"}[2m])) by (le, ingress))",
+            "expr": "histogram_quantile(0.90, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"sre-cource-api\"}[2m])) by (le, ingress))",
             "format": "time_series",
             "legendFormat": "P90 Latency",
+            "range": true,
             "refId": "B"
           },
           {
@@ -137,9 +140,10 @@
               "uid": "aea5raptwgu0wc"
             },
             "editorMode": "code",
-            "expr": "histogram_quantile(0.50, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"my-release-ingress\"}[2m])) by (le, ingress))",
+            "expr": "histogram_quantile(0.50, sum(rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"sre-cource-api\"}[2m])) by (le, ingress))",
             "format": "time_series",
             "legendFormat": "P50 Latency",
+            "range": true,
             "refId": "C"
           }
         ],
@@ -235,9 +239,10 @@
               "uid": "aea5raptwgu0wc"
             },
             "editorMode": "code",
-            "expr": "sum(rate(nginx_ingress_controller_requests{ingress=\"my-release-ingress\"}[2m]))",
+            "expr": "sum(rate(nginx_ingress_controller_requests{ingress=\"sre-cource-api\"}[15s]))",
             "format": "time_series",
             "legendFormat": "Request Volume",
+            "range": true,
             "refId": "A"
           }
         ],
@@ -319,7 +324,7 @@
               "mean"
             ],
             "displayMode": "table",
-            "placement": "bottom",
+            "placement": "right",
             "showLegend": true
           },
           "tooltip": {
@@ -443,11 +448,11 @@
             "refId": "A"
           }
         ],
-        "title": "Saturation (CPU Utilization)",
+        "title": "Saturation ",
         "type": "timeseries"
       }
     ],
-    "refresh": "5s",
+    "refresh": "",
     "schemaVersion": 39,
     "tags": [
       "nginx"
@@ -456,8 +461,8 @@
       "list": []
     },
     "time": {
-      "from": "now-15m",
-      "to": "now"
+      "from": "2025-01-17T17:19:01.450Z",
+      "to": "2025-01-17T17:31:00.049Z"
     },
     "timepicker": {
       "refresh_intervals": [
@@ -487,6 +492,6 @@
     "timezone": "browser",
     "title": "4 Golden Signals Dashboard",
     "uid": "4-golden-signals",
-    "version": 3,
+    "version": 6,
     "weekStart": ""
   }
